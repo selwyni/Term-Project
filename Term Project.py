@@ -879,71 +879,39 @@ def createCoordinates(TupleLists):
 
 class SimpleUnitCell(object):
     def __init__(self):
-        self.atom_x = []
-        self.atom_y = []
-        self.atom_z = []
-        (self.red_x, self.red_y, self.red_z) = ([],[],[])
-        (self.white_x, self.white_y, self.white_z) = ([],[],[])
-        for i in range(8):
-            for y in range(8):
-                for z in range(8):
-                    self.atom_x.append(i)
-                    self.atom_y.append(y)
-        self.atom_z = [i for i in range(8)]*64
-        self.separateRedWhite()
-        self.numRArrayX = np.array(self.red_x)
-        self.numRArrayY = np.array(self.red_y)
-        self.numRArrayZ = np.array(self.red_z)
-        self.numWArrayX = np.array(self.white_x)
-        self.numWArrayY = np.array(self.white_y)
-        self.numWArrayZ = np.array(self.white_z)
+        (self.one_x, self.one_y, self.one_z) = ([],[],[])
+        (self.two_x, self.two_y, self.two_z) = ([],[],[])
+        self.createUnitCell()
+        self.TupleList = CCPTupleList(self.UnitCell)
+        self.Cell = removeRepeats(self.TupleList)
+        self.coordinates = createCoordinates(self.Cell)
+        plot3D(self.coordinates)
         
+    def createUnitCell(self):
+        self.one_xUnit = [0]*4 + [1]*4
+        self.one_yUnit = ([0]*2 + [1]*2)*2
+        self.one_zUnit = [0,1]*4
         
-    def separateRedWhite(self):
-        for index in range(len(self.atom_x)):
-            xcor = self.atom_x[index]
-            ycor = self.atom_y[index]
-            zcor = self.atom_z[index]
-            if ((xcor + ycor + zcor)%2 == 0):
-                self.red_x.append(self.atom_x[index])
-                self.red_y.append(self.atom_y[index])
-                self.red_z.append(self.atom_z[index])
-            else:
-                self.white_x.append(self.atom_x[index])
-                self.white_y.append(self.atom_y[index])
-                self.white_z.append(self.atom_z[index])
-        
+        self.two_xUnit = []
+        self.two_yUnit = []
+        self.two_zUnit = []
+        self.UnitCell = [self.one_xUnit, self.one_yUnit, self.one_zUnit, 
+                    self.two_xUnit, self.two_yUnit, self.two_zUnit]
+    
         
 class BodyCenteredCubic(object):
     def __init__(self):
-        (self.red_x, self.red_y, self.red_z) = ([],[],[])
-        (self.white_x, self.white_y, self.white_z) = ([],[],[])
-        self.createRed()
-        self.createWhite()
-        self.numRArrayX = np.array(self.red_x)
-        self.numRArrayY = np.array(self.red_y)
-        self.numRArrayZ = np.array(self.red_z)
-        self.numWArrayX = np.array(self.white_x)
-        self.numWArrayY = np.array(self.white_y)
-        self.numWArrayZ = np.array(self.white_z)
-                
+        (self.one_x, self.one_y, self.one_z) = ([],[],[])
+        (self.two_x, self.two_y, self.two_z) = ([],[],[])
+        self.createUnitCell()
+        self.TupleList = CCPTupleList(self.UnitCell)
+        self.Cell = removeRepeats(self.TupleList)
+        self.coordinates = createCoordinates(self.Cell)
+        plot3D(self.coordinates)
         
-    def createRed(self):
-        for i in range(8):
-            for y in range(8):
-                for z in range(8):
-                    self.red_x.append(i)
-                    self.red_y.append(y)
-        self.red_z = [i for i in range(8)]*64
-        
-    def createWhite(self):
-        for x in range(7):
-            for y in range(7):
-                for z in range(7):
-                    self.white_x.append(x + 0.5)
-                    self.white_y.append(y + 0.5)
-        self.white_z = [i + 0.5 for i in range(7)]*49
-    
+    def createUnitCell(self):
+        self.one_xUnit = [0]*4 + [0.5] + [1]*4
+        self.one_yUnit = 
 class FaceCenteredCubic(object):
     def __init__(self):
         (self.one_x, self.one_y, self.one_z) = ([],[],[])
