@@ -643,7 +643,7 @@ class UnitConv(QtGui.QWidget):
         fromKgIndex = self.massUnits.index(goalUnit)
         scaleToKg = [10**-3, 1, 10**-6, 10**-9, 10**-12, 1.660539040*10**-27,
                         0.453592]
-        scaleFromKg = [10**3, 1, 10**6, 10**9, 10**12, 1/1.660539040*10**-27,
+        scaleFromKg = [10**3, 1, 10**6, 10**9, 10**12, (1/1.660539040)*10**27,
                         2.20462]
         print(1/(1.6605*10**-27))
         self.val = givenVal * scaleToKg[toKgIndex] * scaleFromKg[fromKgIndex]
@@ -679,41 +679,20 @@ class UnitConv(QtGui.QWidget):
             self.val = givenVal
         elif (givenUnit == u'\u00B0T'):
             if (goalUnit == u'\u00B0C'):
-                self.val = (givenVal - 32)*5 / 9
+                self.val = (givenVal - 32)*5.0 / 9.0
             elif (goalUnit == 'K'):
-                self.val = (givenVal + 459.67)*5/9
+                self.val = (givenVal + 459.67)*5.0/9.0
         elif (givenUnit == u'\u00B0C'):
             if (goalUnit == u'\u00B0T'):
-                self.val = givenVal*9/5 + 32
+                self.val = givenVal*9.0/5.0 + 32
             elif (goalUnit == 'K'):
                 self.val = givenVal + 273.15
         elif (givenUnit == 'K'):
             if (goalUnit == u'\u00B0T'):
-                self.val = givenVal*9/5 - 459.67
+                self.val = givenVal*9.0/5.0 - 459.67
             elif (goalUnit == u'\u00B0C'):
                 self.val = givenVal - 273.15
         self.updateLabel()
-###########################
-# Stress Strain Calculator
-###########################
-
-###########################
-# Diffusion Calculations
-###########################
-# Ficks 1st and 2nd Law
-
-###########################
-# Theoretical Density Calculations
-###########################
-
-def calcAtomsInUnitCell(unitCell):
-    pass
-
-def calcVolOfUnitCell(unitCell, atomRadA, atomRadB=0):
-    pass
-    
-def calcTheoreticalDensity(unitCell):
-    pass
 
     
 ###########################
@@ -794,50 +773,54 @@ def plot3D(coords):
 # CrystalStructure Helpers
 ##########################################
 
-def CCPTupleList(UnitCell, n=4):
+def CCPTupleList(UnitCell, n=4, xFactor=1, yFactor=1, zFactor=1):
     (one_x, one_y, one_z) = ([], [], [])
     (two_x, two_y, two_z) = ([], [], [])
     (oneX, oneY, oneZ) = (UnitCell[0], UnitCell[1], UnitCell[2])
     (twoX, twoY, twoZ) = (UnitCell[3], UnitCell[4], UnitCell[5])
-    for zOffset in range(n):
-            for yOffset in range(n):
-                for xOffset in range(n):
-                    for elem in oneX:
-                        one_x.append(elem + xOffset)
-                    for elem in oneY:
-                        one_y.append(elem + yOffset)
-                    for elem in oneZ:
-                        one_z.append(elem + zOffset)
-                    for elem in twoX:
-                        two_x.append(elem + xOffset)
-                    for elem in twoY:
-                        two_y.append(elem + yOffset)
-                    for elem in twoZ:
-                        two_z.append(elem + zOffset) 
+    for zOffsetInt in range(n):
+        zOffset = zOffsetInt*zFactor
+        for yOffsetInt in range(n):
+            yOffset = yOffset*yFactor
+            for xOffsetInt in range(n):
+                xOffset = xOffset*xFactor
+                for elem in oneX:
+                    one_x.append(elem + xOffset)
+                for elem in oneY:
+                    one_y.append(elem + yOffset)
+                for elem in oneZ:
+                    one_z.append(elem + zOffset)
+                for elem in twoX:
+                    two_x.append(elem + xOffset)
+                for elem in twoY:
+                    two_y.append(elem + yOffset)
+                for elem in twoZ:
+                    two_z.append(elem + zOffset) 
     return [one_x, one_y, one_z, two_x, two_y, two_z]
     
-def HCPTupleList(UnitCell, n=4):
+def HCPTupleList(UnitCell, n=4, xFactor=0.5, yFactor=(3**0.5 /2), zFactor=1):
     (one_x, one_y, one_z) = ([], [], [])
     (two_x, two_y, two_z) = ([], [], [])
     (oneX, oneY, oneZ) = (UnitCell[0], UnitCell[1], UnitCell[2])
     (twoX, twoY, twoZ) = (UnitCell[3], UnitCell[4], UnitCell[5])
-    for zOffset in range(n):
-            for yOffsetInt in range(n):
-                yOffset = yOffsetInt*3**0.5 / 2
-                for xOffset in range(n):
-                    xOffset = xOffset + yOffsetInt*0.5
-                    for elem in oneX:
-                        one_x.append(elem + xOffset)
-                    for elem in oneY:
-                        one_y.append(elem + yOffset)
-                    for elem in oneZ:
-                        one_z.append(elem + zOffset)
-                    for elem in twoX:
-                        two_x.append(elem + xOffset)
-                    for elem in twoY:
-                        two_y.append(elem + yOffset)
-                    for elem in twoZ:
-                        two_z.append(elem + zOffset) 
+    for zOffsetInt in range(n):
+        zOffset = zOffsetInt*zFactor
+        for yOffsetInt in range(n):
+            yOffset = yOffsetInt*yFactor
+            for xOffsetInt in range(n):
+                xOffset = xOffsetInt + yOffsetInt*xFactor
+                for elem in oneX:
+                    one_x.append(elem + xOffset)
+                for elem in oneY:
+                    one_y.append(elem + yOffset)
+                for elem in oneZ:
+                    one_z.append(elem + zOffset)
+                for elem in twoX:
+                    two_x.append(elem + xOffset)
+                for elem in twoY:
+                    two_y.append(elem + yOffset)
+                for elem in twoZ:
+                    two_z.append(elem + zOffset) 
     return [one_x, one_y, one_z, two_x, two_y, two_z]
     
 
@@ -877,7 +860,7 @@ def createCoordinates(TupleLists):
 # Single Element Crystal Structures
 ##########################################   
 
-class SimpleUnitCell(object):
+class SCC(object):
     def __init__(self):
         (self.one_x, self.one_y, self.one_z) = ([],[],[])
         (self.two_x, self.two_y, self.two_z) = ([],[],[])
@@ -899,7 +882,7 @@ class SimpleUnitCell(object):
                     self.two_xUnit, self.two_yUnit, self.two_zUnit]
     
         
-class BodyCenteredCubic(object):
+class BCC(object):
     def __init__(self):
         (self.one_x, self.one_y, self.one_z) = ([],[],[])
         (self.two_x, self.two_y, self.two_z) = ([],[],[])
@@ -911,15 +894,25 @@ class BodyCenteredCubic(object):
         
     def createUnitCell(self):
         self.one_xUnit = [0]*4 + [0.5] + [1]*4
-        self.one_yUnit = 
-class FaceCenteredCubic(object):
+        self.one_yUnit = [0]*2 + [1]*2 + [0.5] + [0]*2 + [1]*2
+        self.one_zUnit = [0,1]*2 + [0.5] + [0,1]*2
+
+        self.two_xUnit = []
+        self.two_yUnit = []
+        self.two_zUnit = []
+        
+        self.UnitCell = [self.one_xUnit, self.one_yUnit, self.one_zUnit,
+                            self.two_xUnit, self.two_yUnit, self.two_zUnit]
+
+class FCC(object):
     def __init__(self):
         (self.one_x, self.one_y, self.one_z) = ([],[],[])
         (self.two_x, self.two_y, self.two_z) = ([],[],[])
         self.createUnitCell()
-        self.createTuplePointList()
-        self.removeRepeats()
-        self.createCoords()
+        self.TupleList = CCPTupleList(self.UnitCell)
+        self.Cell = removeRepeats(self.TupleList)
+        self.coordinates = createCoordinates(self.Cell)
+        plot3D(self.coordinates)
         
     def createUnitCell(self):
         #Create the basic unit coordinates to the FCC crystal
@@ -929,60 +922,19 @@ class FaceCenteredCubic(object):
         self.two_xUnit = [0] + [0.5]*4 + [1]
         self.two_yUnit = [0.5]*2 + [0] + [1] + [0.5]*2
         self.two_zUnit = [0.5] + [0] + [0.5]*2 + [1] + [0.5]
-                                                
-    def createTuplePointList(self):
-        for zOffset in range(3):
-            for xOffset in range(3):
-                for yOffset in range(3):
-                    for elem in self.one_xUnit:
-                        self.one_x.append(elem + xOffset)
-                    for elem in self.one_yUnit:
-                        self.one_y.append(elem + yOffset)                
-                    for elem in self.one_zUnit:
-                        self.one_z.append(elem + zOffset)
-                    for elem in self.two_xUnit:
-                        self.two_x.append(elem + xOffset)
-                    for elem in self.two_yUnit:
-                        self.two_y.append(elem + yOffset)
-                    for elem in self.two_zUnit:
-                        self.two_z.append(elem + zOffset)
-    
-    def removeRepeats(self):
-        self.oneTupleList = []
-        self.twoTupleList = []
-        for index in range(len(self.one_x)):
-            point = (self.one_x[index], self.one_y[index], self.one_z[index])
-            if point in self.oneTupleList:
-                continue
-            else:
-                self.oneTupleList.append(point)
-        for index in range(len(self.two_x)):
-            point = (self.two_x[index], self.two_y[index], self.two_z[index])
-            if point in self.twoTupleList:
-                continue
-            else:
-                self.twoTupleList.append(point)
-                
-    def createCoords(self):
-        (self.one_x, self.one_y, self.one_z) = ([],[],[])
-        (self.two_x, self.two_y, self.two_z) = ([],[],[])
-        for elem in self.oneTupleList:
-            self.one_x.append(elem[0])
-            self.one_y.append(elem[1])
-            self.one_z.append(elem[2])
-        for elem in self.twoTupleList:
-            self.two_x.append(elem[0])
-            self.two_y.append(elem[1])
-            self.two_z.append(elem[2])
         
-class HexagonalCell(object):
+        self.UnitCell = [self.one_xUnit, self.one_yUnit, self.one_zUnit,
+                            self.two_xUnit, self.two_yUnit, self.two_zUnit]
+        
+class HCP(object):
     def __init__(self):
         (self.one_x, self.one_y, self.one_z) = ([],[],[])
         (self.two_x, self.two_y, self.two_z) = ([],[],[])
         self.createUnitCell()
-        self.createTuplePointList()
-        self.removeRepeats()
-        self.createCoords()
+        self.TupleList = HCPTupleList(self.UnitCell, 1)
+        self.Cell = removeRepeats(self.TupleList)
+        self.coordinates = createCoordinates(self.Cell)
+        plot3D(self.coordinates)
         
     def createUnitCell(self):
         r3 = 3**0.5 * 0.5
@@ -996,37 +948,10 @@ class HexagonalCell(object):
         self.two_yUnit = [r3*2/3] + [r3 + r3*2/3] + [r3*2/3]
         self.two_zUnit = [2**0.5 / 3**0.5]*3
 
-    def createTuplePointList(self):
-        pass 
+        self.UnitCell = [self.one_xUnit, self.one_yUnit, self.one_zUnit,
+                            self.two_xUnit, self.two_yUnit, self.two_zUnit]
         
-    def removeRepeats(self):
-        self.oneTupleList = []
-        self.twoTupleList = []
-        for index in range(len(self.one_x)):
-            point = (self.one_x[index], self.one_y[index], self.one_z[index])
-            if point in self.oneTupleList:
-                continue
-            else:
-                self.oneTupleList.append(point)
-        for index in range(len(self.two_x)):
-            point = (self.two_x[index], self.two_y[index], self.two_z[index])
-            if point in self.twoTupleList:
-                continue
-            else:
-                self.twoTupleList.append(point)
-                
-    def createCoords(self):
-        (self.one_x, self.one_y, self.one_z) = ([],[],[])
-        (self.two_x, self.two_y, self.two_z) = ([],[],[])
-        for elem in self.oneTupleList:
-            self.one_x.append(elem[0])
-            self.one_y.append(elem[1])
-            self.one_z.append(elem[2])
-        for elem in self.twoTupleList:
-            self.two_x.append(elem[0])
-            self.two_y.append(elem[1])
-            self.two_z.append(elem[2])
-            
+        
 ##########################################
 # AB Crystal Structures
 ########################################## 
@@ -1159,14 +1084,29 @@ class YCl3(object):
     def __init__(self):
         (self.one_x, self.one_y, self.one_z) = ([],[],[])
         (self.two_x, self.two_y, self.two_z) = ([],[],[])
+        self.s69 = math.sin(math.radians(69))
+        self.c69 = math.cos(math.radians(69))
         self.createUnitCell()
-        self.createTuplePointList()
-        self.removeRepeats()
-        self.createCoords()
+        self.TupleList = HCPTupleList(self.UnitCell, 1, self.c69,self.s69)
+        self.Cell = removeRepeats(self.TupleList)
+        self.coordinates = createCoordinates(self.Cell)
+        plot3D(self.coordinates)
                 
     def createUnitCell(self):
-        pass
-
+        self.one_xUnit = [0]*2 + [self.c69]*2 + [0.5]*2 + [0.5+self.c69]*2 + \
+                            [1]*2 + [1+self.c69]*2
+        self.one_yUnit = ([0]*2 + [1]*2)*3
+        self.one_zUnit = [1.0/3.0, 5.0/3.0]*2 + [2.0/3.0, 4.0/3.0]*2 + \
+                            [1.0/3.0, 5.0/3.0]*2
+        
+        self.two_xUnit = []
+        self.two_yUnit = []
+        self.two_zUnit = []
+        self.UnitCell = [self.one_xUnit, self.one_yUnit, self.one_zUnit, 
+                    self.two_xUnit, self.two_yUnit, self.two_zUnit]
+        
+c = YCl3()
+        
 class BiI3(object):
     def __init__(self):
         (self.one_x, self.one_y, self.one_z) = ([],[],[])
@@ -1182,6 +1122,29 @@ class BiI3(object):
 ##########################################
 # A2B Crystal Structure
 ########################################## 
+class CdI2(object):
+    def __init__(self):
+        (self.one_x, self.one_y, self.one_z) = ([],[],[])
+        (self.two_x, self.two_y, self.two_z) = ([],[],[])
+        self.createUnitCell()
+        self.TupleList = HCPTupleList(self.UnitCell, 1)
+        self.Cell = removeRepeats(self.TupleList)
+        self.coordinates = createCoordinates(self.Cell)
+        plot3D(self.coordinates)
+        
+    def createUnitCell(self):
+        self.one_xUnit = []
+        self.one_yUnit = [0]*2 + [1]*2 + [0.5] + [0]*2 + [1]*2
+        self.one_zUnit = [0,1]*2 + [0.5] + [0,1]*2
+        
+        self.two_xUnit = [0.25] + [0.3]*2 + [0.7]*2 + [0.75]
+        self.two_yUnit = [0.25] + [0.7]*2 + [0.3]*2 + [0.75]
+        self.two_zUnit = [0.5] + [0,1]*2 + [0.5]
+    
+        self.UnitCell = [self.one_xUnit, self.one_yUnit, self.one_zUnit, 
+                    self.two_xUnit, self.two_yUnit, self.two_zUnit]
+     
+
 
 class Rutile(object):
     def __init__(self):
@@ -1237,6 +1200,22 @@ def printArrays(x, y, z):
     for index in range(len(x)):
         print((x[index], y[index], z[index]))
 
+
+#######################################
+# TP2 Update Test Functions
+#######################################
+
+#c = SCC()
+#d = FCC()
+#e = BCC()
+#f = HCP()
+#g = NaCl()
+#h = NiAs()
+#i = ZincBlende()
+#j = Wurtzite()
+#k = Fluorite()
+#l = Rutile()
+#m = Li3Bi()
 
 ############################
 # Run Function
